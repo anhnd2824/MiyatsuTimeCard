@@ -1,0 +1,10 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '10.0'
+use_frameworks!
+
+target 'MiyatsuTimeCard' do
+pod 'Alamofire', '~> 4.4'
+pod 'Kanna', '~> 2.1.0'
+pod 'Toast-Swift', '~> 2.0.0'
+pod 'JTAppleCalendar', '~> 7.0'
+end
