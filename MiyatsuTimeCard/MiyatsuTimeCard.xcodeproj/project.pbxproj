@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		88F99C2BFF0D9C530D2759EB /* Pods_MiyatsuTimeCard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32DCEC76234A1AF850EDE046 /* Pods_MiyatsuTimeCard.framework */; };
+		C31922641ED6917500054B0A /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31922631ED6917500054B0A /* SettingViewController.swift */; };
 		C3529D7B1ED2D33A00D7B598 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3529D7A1ED2D33A00D7B598 /* AppDelegate.swift */; };
 		C3529D7D1ED2D33A00D7B598 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3529D7C1ED2D33A00D7B598 /* FirstViewController.swift */; };
 		C3529D7F1ED2D33A00D7B598 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3529D7E1ED2D33A00D7B598 /* SecondViewController.swift */; };
@@ -20,7 +21,9 @@
 		C357DCFF1ED56FAD00BF6C3D /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C357DCFE1ED56FAD00BF6C3D /* CustomTabBarViewController.swift */; };
 		C357DD021ED57F8100BF6C3D /* TPKeyboardAvoidingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = C357DD011ED57F8100BF6C3D /* TPKeyboardAvoidingScrollView.m */; };
 		C357DD051ED57FA800BF6C3D /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = C357DD041ED57FA800BF6C3D /* UIScrollView+TPKeyboardAvoidingAdditions.m */; };
+		C372CE291ED7D3E500D365E6 /* UserProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C372CE281ED7D3E500D365E6 /* UserProfileViewController.swift */; };
 		C3C17CD31ED2DF1800657471 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C17CD21ED2DF1800657471 /* Alamofire.framework */; };
+		C3CAD0B11ED7E36800F3FB04 /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CAD0B01ED7E36800F3FB04 /* ChangePasswordViewController.swift */; };
 		C3D52BC21ED4426400B1AB8C /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D52BC11ED4426400B1AB8C /* CustomCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +49,7 @@
 		32DCEC76234A1AF850EDE046 /* Pods_MiyatsuTimeCard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MiyatsuTimeCard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E10DCB144DB737241F26E5C /* Pods-MiyatsuTimeCard.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MiyatsuTimeCard.release.xcconfig"; path = "Pods/Target Support Files/Pods-MiyatsuTimeCard/Pods-MiyatsuTimeCard.release.xcconfig"; sourceTree = "<group>"; };
 		C30F0E521ED3F92200D454FC /* MiyatsuTimeCard-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MiyatsuTimeCard-Bridging-Header.h"; sourceTree = "<group>"; };
+		C31922631ED6917500054B0A /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		C3529D771ED2D33A00D7B598 /* MiyatsuTimeCard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MiyatsuTimeCard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3529D7A1ED2D33A00D7B598 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3529D7C1ED2D33A00D7B598 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -66,7 +70,9 @@
 		C357DD011ED57F8100BF6C3D /* TPKeyboardAvoidingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TPKeyboardAvoidingScrollView.m; sourceTree = "<group>"; };
 		C357DD031ED57FA800BF6C3D /* UIScrollView+TPKeyboardAvoidingAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+TPKeyboardAvoidingAdditions.h"; sourceTree = "<group>"; };
 		C357DD041ED57FA800BF6C3D /* UIScrollView+TPKeyboardAvoidingAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+TPKeyboardAvoidingAdditions.m"; sourceTree = "<group>"; };
+		C372CE281ED7D3E500D365E6 /* UserProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileViewController.swift; sourceTree = "<group>"; };
 		C3C17CD21ED2DF1800657471 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../Library/Developer/Xcode/DerivedData/MiyatsuTimeCard-doqmbpbgmmdjfbanafwkdoogatib/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
+		C3CAD0B01ED7E36800F3FB04 /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
 		C3D52BC11ED4426400B1AB8C /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -146,6 +152,9 @@
 				C3529D7C1ED2D33A00D7B598 /* FirstViewController.swift */,
 				C3529D7E1ED2D33A00D7B598 /* SecondViewController.swift */,
 				C3529DAA1ED2D66300D7B598 /* LoginViewController.swift */,
+				C31922631ED6917500054B0A /* SettingViewController.swift */,
+				C372CE281ED7D3E500D365E6 /* UserProfileViewController.swift */,
+				C3CAD0B01ED7E36800F3FB04 /* ChangePasswordViewController.swift */,
 				C31922601ED6840200054B0A /* CustomView */,
 				C319225F1ED683C600054B0A /* TPKeyBoardAvoiding */,
 				C3529D801ED2D33A00D7B598 /* Main.storyboard */,
@@ -381,13 +390,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3CAD0B11ED7E36800F3FB04 /* ChangePasswordViewController.swift in Sources */,
 				C357DD021ED57F8100BF6C3D /* TPKeyboardAvoidingScrollView.m in Sources */,
 				C3529DAB1ED2D66300D7B598 /* LoginViewController.swift in Sources */,
 				C3529D7F1ED2D33A00D7B598 /* SecondViewController.swift in Sources */,
 				C357DCFF1ED56FAD00BF6C3D /* CustomTabBarViewController.swift in Sources */,
+				C31922641ED6917500054B0A /* SettingViewController.swift in Sources */,
 				C3D52BC21ED4426400B1AB8C /* CustomCell.swift in Sources */,
 				C357DD051ED57FA800BF6C3D /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
 				C3529D7B1ED2D33A00D7B598 /* AppDelegate.swift in Sources */,
+				C372CE291ED7D3E500D365E6 /* UserProfileViewController.swift in Sources */,
 				C3529D7D1ED2D33A00D7B598 /* FirstViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -545,6 +557,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 86UW9K6N76;
 				INFOPLIST_FILE = MiyatsuTimeCard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = miyatsu.vn.MiyatsuTimeCard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -560,6 +573,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 86UW9K6N76;
 				INFOPLIST_FILE = MiyatsuTimeCard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = miyatsu.vn.MiyatsuTimeCard;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -73,6 +73,11 @@
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     [[self TPKeyboardAvoiding_findFirstResponderBeneathView:self] resignFirstResponder];
+    UITouch *touch = [touches anyObject];
+    
+    if(touch.view.tag!=1){
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Hide" object:nil];
+    }
     [super touchesEnded:touches withEvent:event];
 }
 

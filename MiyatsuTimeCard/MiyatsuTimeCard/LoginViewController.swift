@@ -22,28 +22,85 @@ extension String {
     }
 }
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource{
 
     var shows : [String] = []
     var calendarDay: [String] = []
+    var shiftData: [String] = []
+    var shiftId: Int = 1
     
     @IBOutlet weak var idTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var checkBoxButton: UIButton!
     @IBOutlet weak var autoLoginButton: UIButton!
-    
+    @IBOutlet weak var chooseShiftButton: UIButton!
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var shiftPickerView: UIPickerView!
+    @IBOutlet weak var shiftPickerToolbar: UIToolbar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        shiftData = ["08:00 ~ 17:00",
+                     "06:30 ~ 15:00",
+                     "14:30 ~ 23:00",
+                     "14:30 ~ 23:00",
+                     "06:30 ~ 23:00",
+                     "14:30 ~ 07:00",
+                     "22:30 ~ 15:00",
+                     "07:00 ~ 16:00",
+                     "14:30 ~ 23:30",
+                     "22:30 ~ 07:30",
+                     "09:50 ~ 18:50",
+                     "11:50 ~ 20:50",
+                     "08:50 ~ 17:50",
+                     "07:30 ~ 16:30",
+                     "08:30 ~ 17:30",
+                     "03:50 ~ 11:50",
+                     "11:50 ~ 19:50",
+                     "19:50 ~ 03:50"]
+        shiftPickerView.delegate = self
+        shiftPickerView.dataSource = self
+        
         checkSaveId()
         checkAutoLogin()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(hidePickerView), name: NSNotification.Name(rawValue: "Hide"), object: nil)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - PickerView
+    @objc func hidePickerView() {
+        shiftPickerView.isHidden = true
+        shiftPickerToolbar.isHidden = true
+    }
+    
+    // The number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int{
+        return 1
+    }
+    
+    // The number of rows of data
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int{
+        return shiftData.count
+    }
+    
+    // The data to return for the row and component (column) that's being passed in
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return shiftData[row]
+    }
+    
+    // Catpure the picker view selection
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        // This method is triggered whenever the user makes a change to the picker selection.
+        // The parameter named row and component represents what was selected.
+        shiftId = row+1
+        chooseShiftButton.setTitle(shiftData[row], for: .normal)
     }
     
     func checkSaveId(){
@@ -87,14 +144,35 @@ class LoginViewController: UIViewController {
     */
     
     @IBAction func checkBoxButtonClicked(_ sender: UIButton) {
-        sender.isSelected = !sender.isSelected
+        if sender == autoLoginButton{
+            sender.isSelected = !sender.isSelected
+            if sender.isSelected{
+                checkBoxButton.isSelected = true
+            }
+        } else {
+            if autoLoginButton.isSelected{
+                checkBoxButton.isSelected = true
+            } else {
+                sender.isSelected = !sender.isSelected
+            }
+        }
+    }
+    
+    @IBAction func chooseShiftButtonClicked(_ sender: UIButton) {
+        shiftPickerView.isHidden = false
+        shiftPickerToolbar.isHidden = false
+    }
+    
+    @IBAction func doneButtonClicked(_ sender: UIBarButtonItem) {
+        shiftPickerView.isHidden = true
+        shiftPickerToolbar.isHidden = true
     }
     
     @IBAction func LoginButtonClicked(_ sender: UIButton) {
         let parameters: Parameters = [
             "username": "\(idTextField.text ?? "")",
             "password": "\(passwordTextField.text ?? "")",
-            "shift_id": "1"
+            "shift_id": "\(shiftId)"
         ]
         
 //        let sha1Password = passwordTextField.text?.sha1()
@@ -102,13 +180,6 @@ class LoginViewController: UIViewController {
         
         // Validate and login
         Alamofire.request("http://timecard.miyatsu.vn/timecard/auth/login", method: .post, parameters: parameters).responseString{ response in
-//            print("Request: \(String(describing: response.request)) ")  // original URL request
-//            print("Response: \(String(describing: response.response))") // HTTP URL response
-//            print("Data: \(String(describing: response.data))")     // server data
-//            print("Result: \(String(describing:response.result))")   // result of response serialization
-            
-//            debugPrint(response)
-            
             let statuscode = response.response?.statusCode
             switch response.result
             {
@@ -128,6 +199,10 @@ class LoginViewController: UIViewController {
                             UserDefaults.standard.set("", forKey: "password")
                             UserDefaults.standard.set(false, forKey: "saveState")
                             UserDefaults.standard.synchronize()
+                            
+                            // Clear text field
+                            self.idTextField.text = ""
+                            self.passwordTextField.text = ""
                         }
                         
                         if self.autoLoginButton.isSelected{
@@ -152,6 +227,10 @@ class LoginViewController: UIViewController {
                 self.view.makeToast("Wrong")
             }
         }
+        
+        // Hide picker view
+        shiftPickerView.isHidden = true
+        shiftPickerToolbar.isHidden = true
     }
     
     func parseHTML(html: String) -> Void {
@@ -169,10 +248,6 @@ class LoginViewController: UIViewController {
                 // Make a set
                 let set = subString.components(separatedBy: "\n").map({$0})
                 
-                // Show time info (if had)
-                print("Working time: \(set[0])")
-                print("Work start: \(set[11])")
-                
                 UserDefaults.standard.set(set, forKey: "sethtml")
                 UserDefaults.standard.synchronize()
                 
@@ -180,10 +255,6 @@ class LoginViewController: UIViewController {
             
             for show in doc.css("td[class^='calendar-day']") {
                 let showString = show.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-                
-                //                if let node = Kanna.HTML(html: show.toHTML!, encoding: String.Encoding.utf8)?.at_css("img"){
-                //                    print(node["src"] ?? "Wrong")
-                //                }
                 
                 let setToRemove: CharacterSet =
                     CharacterSet.init(charactersIn: "0123456789▲▼.:").inverted

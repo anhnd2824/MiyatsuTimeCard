@@ -99,7 +99,7 @@ class FirstViewController: UIViewController {
         workingTimeLabel.text = set[0] != "" ? set[0].replacingOccurrences(of: "WORKINGTIME~", with: "") : ""
         if set[11] != "Submit"{
             submitWorkStartButton.setTitle(set[11], for: .normal)
-            if (submitWorkStartButton.titleLabel?.text?.contains("▲"))!{
+            if (set[11].contains("▲")){
                 submitWorkStartButton.setTitleColor(UIColor.init(red: 230/255, green: 51/255, blue: 41/255, alpha: 1), for: .normal)
             } else {
                 submitWorkStartButton.setTitleColor(UIColor.black, for: .normal)
@@ -118,7 +118,7 @@ class FirstViewController: UIViewController {
         }
         if set[17] != "Submit"{
             submitWorkEndButton.setTitle(set[17], for: .normal)
-            if (submitWorkEndButton.titleLabel?.text?.contains("▼"))!{
+            if (set[17].contains("▼")){
                 submitWorkEndButton.setTitleColor(UIColor.init(red: 15/255, green: 50/255, blue: 243/255, alpha: 1), for: .normal)
             } else {
                 submitWorkEndButton.setTitleColor(UIColor.black, for: .normal)
@@ -129,7 +129,6 @@ class FirstViewController: UIViewController {
     
     func setupCalendarDay(){
         calendarDay = UserDefaults.standard.value(forKey: "calendarDay") as! [String]
-//        print("calendarDay: \(calendarDay)")
         for aCalendarDay in calendarDay{
             getTimeFromACalendarDay(aCalendarDay: aCalendarDay, index:calendarDay.index(of: aCalendarDay)! + 1)
         }
@@ -145,26 +144,12 @@ class FirstViewController: UIViewController {
             indexes.append(range.lowerBound)
         }
         
-        print("indexes: \(indexes)")
-        print("timeString: \(timeString)")
-        if timeString.characters.count > 8{
-//            if timeString.contains("▲"){
+        if timeString.characters.count > 13{
                 let index = timeString.index(indexes[2], offsetBy:-2)
                 let startTime = timeString.substring(to: index)
-                print("Start time: \(startTime)")
                 timeStart.append(startTime)
                 let endTime = timeString.substring(from: index)
-                print("End time: \(endTime)")
                 timeEnd.append(endTime)
-//            } else {
-//                let index = timeString.index(timeString.startIndex, offsetBy: 8)
-//                let startTime = timeString.substring(to: index)
-//                print("Start time: \(startTime)")
-//                timeStart.append(startTime)
-//                let endTime = timeString.substring(from: index)
-//                print("End time: \(endTime)")
-//                timeEnd.append(endTime)
-//            }
         } else if timeString.characters.count > 0{
                 timeStart.append(timeString)
                 timeEnd.append("")
@@ -252,13 +237,6 @@ class FirstViewController: UIViewController {
     @IBAction func workStartSubmitButtonClicked(_ sender: UIButton) {
         // Submit and reload data
         Alamofire.request("http://timecard.miyatsu.vn/timecard/check?type=1").responseString{ response in
-            //            print("Request: \(String(describing: response.request)) ")  // original URL request
-            //            print("Response: \(String(describing: response.response))") // HTTP URL response
-            //            print("Data: \(String(describing: response.data))")     // server data
-            //            print("Result: \(String(describing:response.result))")   // result of response serialization
-            
-            //            debugPrint(response)
-            
             let statuscode = response.response?.statusCode
             switch response.result
             {
@@ -289,13 +267,6 @@ class FirstViewController: UIViewController {
     @IBAction func leaveOutButtonClicked(_ sender: UIButton) {
         // Submit and reload data
         Alamofire.request("http://timecard.miyatsu.vn/timecard/check?type=2").responseString{ response in
-            //            print("Request: \(String(describing: response.request)) ")  // original URL request
-            //            print("Response: \(String(describing: response.response))") // HTTP URL response
-            //            print("Data: \(String(describing: response.data))")     // server data
-            //            print("Result: \(String(describing:response.result))")   // result of response serialization
-            
-            //            debugPrint(response)
-            
             let statuscode = response.response?.statusCode
             switch response.result
             {
@@ -324,13 +295,6 @@ class FirstViewController: UIViewController {
     @IBAction func leaveBackButtonClicked(_ sender: UIButton) {
         // Submit and reload data
         Alamofire.request("http://timecard.miyatsu.vn/timecard/check?type=3").responseString{ response in
-            //            print("Request: \(String(describing: response.request)) ")  // original URL request
-            //            print("Response: \(String(describing: response.response))") // HTTP URL response
-            //            print("Data: \(String(describing: response.data))")     // server data
-            //            print("Result: \(String(describing:response.result))")   // result of response serialization
-            
-            //            debugPrint(response)
-            
             let statuscode = response.response?.statusCode
             switch response.result
             {
@@ -360,13 +324,6 @@ class FirstViewController: UIViewController {
     @IBAction func workEndSubmitButtonClicked(_ sender: UIButton) {
         // Submit and reload data
         Alamofire.request("http://timecard.miyatsu.vn/timecard/check?type=4").responseString{ response in
-            //            print("Request: \(String(describing: response.request)) ")  // original URL request
-            //            print("Response: \(String(describing: response.response))") // HTTP URL response
-            //            print("Data: \(String(describing: response.data))")     // server data
-            //            print("Result: \(String(describing:response.result))")   // result of response serialization
-            
-            //            debugPrint(response)
-            
             let statuscode = response.response?.statusCode
             switch response.result
             {
@@ -409,10 +366,6 @@ class FirstViewController: UIViewController {
                 // Make a set
                 let set = subString.components(separatedBy: "\n").map({$0})
                 
-                // Show time info (if had)
-                print("Working time: \(set[0])")
-                print("Work start: \(set[11])")
-                
                 UserDefaults.standard.set(set, forKey: "sethtml")
                 UserDefaults.standard.synchronize()
                 
@@ -420,11 +373,6 @@ class FirstViewController: UIViewController {
             
             for show in doc.css("td[class^='calendar-day']") {
                 let showString = show.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-                
-                //                if let node = Kanna.HTML(html: show.toHTML!, encoding: String.Encoding.utf8)?.at_css("img"){
-                //                    print(node["src"] ?? "Wrong")
-                //                }
-                
                 let setToRemove: CharacterSet =
                     CharacterSet.init(charactersIn: "0123456789▲▼.:").inverted
                 
