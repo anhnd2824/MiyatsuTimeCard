@@ -67,6 +67,12 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         checkAutoLogin()
         
         NotificationCenter.default.addObserver(self, selector: #selector(hidePickerView), name: NSNotification.Name(rawValue: "Hide"), object: nil)
+        
+        // toggle "tap to dismiss" functionality
+        ToastManager.shared.tapToDismissEnabled = true
+        
+        // toggle queueing behavior
+        ToastManager.shared.queueEnabled = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -214,12 +220,7 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
                             UserDefaults.standard.synchronize()
                         }
                         
-                        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-                        
-                        let nextViewController = storyBoard.instantiateViewController(withIdentifier: "tabBar")
-                        
                         self.parseHTML(html: html)
-                        self.present(nextViewController, animated:true, completion:nil)
                     }
                 }
             case .failure(let error):
@@ -231,10 +232,25 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         // Hide picker view
         shiftPickerView.isHidden = true
         shiftPickerToolbar.isHidden = true
+        
+        // Hide keyboard
+        idTextField.endEditing(true)
+        passwordTextField.endEditing(true)
+    }
+    
+    
+    func displayToast(_ message: String){
+        self.view.makeToast(message)
     }
     
     func parseHTML(html: String) -> Void {
         if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+            // Check error message
+            for error in doc.css("p[class^='error_msg']"){
+                print("error: \(error.text ?? "")")
+                self.view.makeToast(error.text!)
+                return
+            }
             
             // Search for nodes by CSS selector
             for show in doc.css("div[id^='timecard']") {
@@ -270,6 +286,14 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
             
             UserDefaults.standard.set(calendarDay, forKey: "calendarDay")
             UserDefaults.standard.synchronize()
+            
+            // Redirect to my timecard
+            
+            let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+            
+            let nextViewController = storyBoard.instantiateViewController(withIdentifier: "tabBar")
+            
+            self.present(nextViewController, animated:true, completion:nil)
         }
     }
 }

@@ -61,7 +61,7 @@ class ChangePasswordViewController: UIViewController {
         if confirmPassTextField.text == ""{
             errorMessage.append("Confirm password field is required.")
         }
-        if confirmPassTextField.text != newPassTextField.text{
+        if confirmPassTextField.text != newPassTextField.text && newPassTextField.text != ""{
             errorMessage.append("Confirm password is not the same.")
         }
         

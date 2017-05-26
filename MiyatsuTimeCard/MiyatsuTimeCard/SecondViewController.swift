@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import Kanna
+import Toast_Swift
 
 class WorkDate{
     var day : String
@@ -110,6 +111,8 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func viewWillAppear(_ animated: Bool) {
         // Hide navigation bar
         self.navigationController?.isNavigationBarHidden = true
+        
+        // Check
     }
     
     override func didReceiveMemoryWarning() {
@@ -127,6 +130,15 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 {
                     if let html = response.result.value{
                         if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account was logined at another device.")
+                                })
+                                
+                            }
                             for show in doc.css("td") {
                                 
                                 // Strip the string of surrounding whitespace.
@@ -165,7 +177,7 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     // MARK: - Preview view
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController?{
-        guard let indexPath = workDiaryTableView?.indexPathForRow(at: (location)) else { return nil }
+        guard let indexPath = workDiaryTableView?.indexPathForRow(at: location) else { return nil }
         
         guard let cell = workDiaryTableView?.cellForRow(at: (indexPath)) else { return nil }
         
@@ -219,6 +231,10 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
     // MARK: - Define custom func

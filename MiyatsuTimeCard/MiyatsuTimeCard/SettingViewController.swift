@@ -11,14 +11,17 @@ import Alamofire
 
 class SettingViewController: UIViewController {
 
+    @IBOutlet weak var changePassButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
+        changePassButton.isExclusiveTouch = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.isNavigationBarHidden = true
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -34,7 +37,7 @@ class SettingViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         if segue.identifier == "changePasswordSg"{
-            let dest = segue.destination as! ChangePasswordViewController
+            _ = segue.destination as! ChangePasswordViewController
         }
         // Pass the selected object to the new view controller.
     }

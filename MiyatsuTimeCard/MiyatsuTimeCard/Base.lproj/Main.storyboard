@@ -945,14 +945,26 @@
                                 <state key="normal" title="Change password">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RaP-dr-Mmm">
+                                <rect key="frame" x="109" y="227" width="156" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.81877624989999997" green="0.42061534519999999" blue="0.38044676179999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal" title="Change password">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
                                 <connections>
-                                    <segue destination="qIx-Or-b6b" kind="show" identifier="changePasswordSg" id="ab1-eZ-v9d"/>
+                                    <segue destination="qIx-Or-b6b" kind="show" id="Oe1-Zt-wHO"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.94111382961273193" green="0.9416007399559021" blue="0.91373354196548462" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
                     <navigationItem key="navigationItem" id="gog-lu-hH9"/>
+                    <connections>
+                        <outlet property="changePassButton" destination="RaP-dr-Mmm" id="Rcw-19-L0D"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="z2d-JZ-m5Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
