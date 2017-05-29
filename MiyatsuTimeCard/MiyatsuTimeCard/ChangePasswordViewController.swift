@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import Alamofire
+import Kanna
+import Toast_Swift
 
 class ChangePasswordViewController: UIViewController {
 
@@ -40,41 +43,70 @@ class ChangePasswordViewController: UIViewController {
     */
 
     @IBAction func updateButtonClicked(_ sender: UIButton) {
-        if validatePassword(){
-            // Check password ok
-            
-        } else {
-            // Check password failed
-            
-        }
+        validatePassword()
+//        if errorInfoLabel.isHidden{
+//            // Check password ok
+//            
+//            
+//        } else {
+//            // Check password failed
+//            // Show message and do nothing
+//            
+//        }
     }
     
-    func validatePassword() -> Bool{
-        var errorMessage = ""
-        // Check available text input
-        if oldPassTextField.text == ""{
-            errorMessage.append("Old password field is required.\n")
-        }
-        if newPassTextField.text == ""{
-            errorMessage.append("New password field is required.\n")
-        }
-        if confirmPassTextField.text == ""{
-            errorMessage.append("Confirm password field is required.")
-        }
-        if confirmPassTextField.text != newPassTextField.text && newPassTextField.text != ""{
-            errorMessage.append("Confirm password is not the same.")
+    func validatePassword(){
+        var errorMessage = "\n"
+        
+        // Send request and get response
+        let parameters: Parameters = [
+            "old_password": "\(oldPassTextField.text ?? "")",
+            "new_password": "\(newPassTextField.text ?? "")",
+            "confirm_password": "\(confirmPassTextField.text ?? "")"
+        ]
+        
+        Alamofire.request("http://timecard.miyatsu.vn/timecard/profile/update", method: .post, parameters: parameters).responseString{ response in
+            let statuscode = response.response?.statusCode
+            switch response.result
+            {
+            case .success(_):
+                if (statuscode == 200)
+                {
+                    if let html = response.result.value{
+                        if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            // Check error message
+//                            for error in doc.css("p[class^='error_msg']"){
+//                                print("error: \(error.text ?? "")")
+//                                //                                self.view.makeToast(error.text!)
+//                                errorMessage.append(error.text!)
+//                                errorMessage.append("\n")
+//                            }
+                            
+                            for profileMsg in doc.css("div[id^='profile-msg']"){
+                                print("profile message: \(profileMsg.text ?? "")")
+                                errorMessage.append(profileMsg.text!)
+                            }
+                            
+                            // Set text to error information label
+                            self.errorInfoLabel.text = errorMessage
+                            
+                            if errorMessage != ""{
+                                self.errorInfoLabel.isHidden = false
+                                
+                            } else {
+                                self.errorInfoLabel.isHidden = true
+                            }
+                            
+                        }
+                    }
+                }
+            case .failure(let error):
+                print("Request Failed With Error:\(error)")
+                 let loginView = self.presentingViewController as! LoginViewController
+                self.dismiss(animated: true, completion: nil)
+                loginView.displayToast("\(error.localizedDescription)")
+            }
         }
         
-        
-        // Set text to error information label
-        errorInfoLabel.text = errorMessage
-        
-        if errorMessage != ""{
-            errorInfoLabel.isHidden = false
-            return false
-        } else {
-            errorInfoLabel.isHidden = true
-            return true
-        }
     }
 }

@@ -181,9 +181,6 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
             "shift_id": "\(shiftId)"
         ]
         
-//        let sha1Password = passwordTextField.text?.sha1()
-//        print(sha1Password)
-        
         // Validate and login
         Alamofire.request("http://timecard.miyatsu.vn/timecard/auth/login", method: .post, parameters: parameters).responseString{ response in
             let statuscode = response.response?.statusCode
@@ -225,7 +222,7 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
                 }
             case .failure(let error):
                 print("Request Failed With Error:\(error)")
-                self.view.makeToast("Wrong")
+                self.view.makeToast("\(error.localizedDescription)")
             }
         }
         

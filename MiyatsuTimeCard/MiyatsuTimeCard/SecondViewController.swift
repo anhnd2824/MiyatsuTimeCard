@@ -69,8 +69,8 @@ class DetailViewController: UIViewController{
             detailLeaveOutTime.text = aDetailDayWork.leaveOutTime
             detailLeaveBackTime.text = aDetailDayWork.leaveBackTime
             detailWorkEndTime.text = aDetailDayWork.workEndTime
-        
-        // Set text time color
+            
+            // Set text time color
             if !checkTime(workTime: aDetailDayWork.workShift, workRealTime: aDetailDayWork.workStartTime, checkLate: true){
                 
                 detailWorkStartTime.textColor = UIColor.init(red: 230/255, green: 51/255, blue: 41/255, alpha: 1)
@@ -93,8 +93,11 @@ class DetailViewController: UIViewController{
 }
 
 class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate {
-
+    
     @IBOutlet weak var workDiaryTableView: UITableView!
+    @IBOutlet weak var userIdTextField: UITextField!
+    @IBOutlet weak var timeTextField: UITextField!
+    
     var set : [String] = []
     var diary : [WorkDate] = []
     
@@ -102,12 +105,33 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         if( traitCollection.forceTouchCapability == .available){
-             registerForPreviewing(with: self, sourceView: view)
+            registerForPreviewing(with: self, sourceView: view)
         }
-
+        
         loadWorkDiary()
+        let customDatePickerView = MonthYearPickerView()
+        
+        timeTextField.inputView = customDatePickerView
+        customDatePickerView.onDateSelected = { (month: Int, year: Int) in
+            let string = String(format: "%02d/%d", month, year)
+            self.timeTextField.text = string
+            NSLog(string) // should show something like 05/2015
+            //            self.timeTextField.endEditing(true)
+        }
+        
+        let toolBar = UIToolbar()
+        toolBar.barStyle = .default
+        toolBar.isTranslucent = true
+        toolBar.tintColor = UIColor.black
+        toolBar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(SecondViewController.donePicker))
+        toolBar.setItems([doneButton], animated: false)
+        toolBar.isUserInteractionEnabled = true
+        
+        timeTextField.inputAccessoryView = toolBar
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         // Hide navigation bar
         self.navigationController?.isNavigationBarHidden = true
@@ -119,7 +143,69 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    @IBAction func viewWorkDiaryButonClicked(_ sender: UIButton) {
+        let inputTime = timeTextField.text?.components(separatedBy: "/")
+        let parameters: Parameters = [
+            "name_id": "\(userIdTextField.text ?? "")",
+            "work_month": "\(inputTime![0])",
+            "work_year": "\(inputTime![1])"
+        ]
+        
+        // Validate and login
+        Alamofire.request("http://timecard.miyatsu.vn/timecard/diary/view", method: .post, parameters: parameters).responseString{ response in
+            let statuscode = response.response?.statusCode
+            switch response.result
+            {
+            case .success(_):
+                if (statuscode == 200)
+                {
+                    if let html = response.result.value{
+                        if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account was logined at another device.")
+                                })
+                                
+                            }
+                            
+                            // Reset data
+                            self.set.removeAll()
+                            self.diary.removeAll()
+                            
+                            for show in doc.css("td") {
+                                
+                                // Strip the string of surrounding whitespace.
+                                let showString = show.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                                
+                                // Filter whitespace
+                                let subString = String(showString.characters.filter({ !(" ".characters.contains($0))}))
+                                self.set.append(subString)
+                            }
+                            
+                            for index in stride(from: 0, to: doc.css("td").count, by: 7){
+                                let aDayWork = WorkDate.init(day: self.set[index], date: self.set[index+1], workShift: self.set[index+2],
+                                                             workStartTime: self.set[index+3], leaveOutTime: self.set[index+4], leaveBackTime: self.set[index+5], workEndTime: self.set[index+6])
+                                
+                                self.diary.append(aDayWork)
+                            }
+                        }
+                        
+                        self.workDiaryTableView.reloadData()
+                    }
+                }
+            case .failure(let error):
+                print("Request Failed With Error:\(error)")
+                let loginView = self.presentingViewController as! LoginViewController
+                self.dismiss(animated: true, completion: nil)
+                loginView.displayToast("\(error.localizedDescription)")
+            }
+        }
+    }
+    
     func loadWorkDiary(){
         Alamofire.request("http://timecard.miyatsu.vn/timecard/diary").responseString{ response in
             let statuscode = response.response?.statusCode
@@ -162,7 +248,9 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 }
             case .failure(let error):
                 print("Request Failed With Error:\(error)")
-                self.view.makeToast("Wrong")
+                let loginView = self.presentingViewController as! LoginViewController
+                self.dismiss(animated: true, completion: nil)
+                loginView.displayToast("\(error.localizedDescription)")
             }
         }
     }
@@ -194,10 +282,10 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController){
-//        viewControllerToCommit.navigationController?.isNavigationBarHidden = false
+        //        viewControllerToCommit.navigationController?.isNavigationBarHidden = false
         show(viewControllerToCommit, sender: self)
     }
-
+    
     
     // MARK: - Table view
     // Only one section in the table view
@@ -220,9 +308,9 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         cell.weekDayLabel.text = diary[row].date
         cell.workTimeLabel.text = diary[row].workShift
         if checkTime(workTime: diary[row].workShift, workRealTime: diary[row].workStartTime, checkLate: true){
-             cell.lateLabel.text = ""
+            cell.lateLabel.text = ""
         } else {
-           cell.lateLabel.text = "▲"
+            cell.lateLabel.text = "▲"
         }
         if checkTime(workTime: diary[row].workShift, workRealTime: diary[row].workEndTime, checkLate: false){
             cell.earlyLabel.text = ""
@@ -236,44 +324,50 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    // MARK: - Picker view
+    func donePicker(){
+        timeTextField.endEditing(true)
+    }
 }
-    // MARK: - Define custom func
-    func checkTime(workTime: String, workRealTime: String, checkLate: Bool) -> Bool{
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm"
-        // checkLate: true -> check late; false -> check early
-        if workTime != ""{
-            if workRealTime != ""{
-        let index = workTime.index(workTime.startIndex, offsetBy:5)
-        let workTimeParse = dateFormatter.date(from: workTime.substring(to: index))
-        let workStartParse = dateFormatter.date(from: workRealTime.substring(to: index))
-        
-        if workStartParse! > workTimeParse!{
-            if checkLate{
-                // you're come late
-                return false
-            } else {
-                return true
+
+// MARK: - Define custom func
+func checkTime(workTime: String, workRealTime: String, checkLate: Bool) -> Bool{
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "HH:mm"
+    // checkLate: true -> check late; false -> check early
+    if workTime != ""{
+        if workRealTime != ""{
+            let index = workTime.index(workTime.startIndex, offsetBy:5)
+            let workTimeParse = dateFormatter.date(from: workTime.substring(to: index))
+            let workStartParse = dateFormatter.date(from: workRealTime.substring(to: index))
+            
+            if workStartParse! > workTimeParse!{
+                if checkLate{
+                    // you're come late
+                    return false
+                } else {
+                    return true
+                }
+            } else if workStartParse! < workTimeParse!{
+                if checkLate{
+                    return true
+                } else {
+                    // you're leave early
+                    return false
+                }
             }
-        } else if workStartParse! < workTimeParse!{
-            if checkLate{
-                return true
-            } else {
-                // you're leave early
-                return false
-            }
-        }
-        
-        // in case same hour and minute, need to check second, implement later
-        // you're ok
-                return true
-            }
-            else{
-                return true
-            }
-        } else {
+            
+            // in case same hour and minute, need to check second, implement later
+            // you're ok
             return true
         }
+        else{
+            return true
+        }
+    } else {
+        return true
     }
+}
 
 

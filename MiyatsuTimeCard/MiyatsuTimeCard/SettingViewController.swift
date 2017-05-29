@@ -58,7 +58,9 @@ class SettingViewController: UIViewController {
                 }
             case .failure(let error):
                 print("Request Failed With Error:\(error)")
-                self.view.makeToast("Wrong")
+                let loginView = self.presentingViewController as! LoginViewController
+                self.dismiss(animated: true, completion: nil)
+                loginView.displayToast("\(error.localizedDescription)")
             }
         }
     }
