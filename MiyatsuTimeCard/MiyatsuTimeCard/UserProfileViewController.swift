@@ -21,27 +21,27 @@ class UserProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         loadUserInformation()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
     func loadUserInformation(){
         Alamofire.request("http://timecard.miyatsu.vn/timecard/profile").responseString{ response in
             let statuscode = response.response?.statusCode
@@ -52,13 +52,23 @@ class UserProfileViewController: UIViewController {
                 {
                     if let html = response.result.value{
                         if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account did login at another device.")
+                                })
+                                return
+                            }
+                            
                             for show in doc.css("td") {
                                 
                                 // Strip the string of surrounding whitespace.
                                 let showString = show.text!.trimmingCharacters(in: CharacterSet.newlines)
                                 
                                 // Filter whitespace
-//                                let subString = String(showString.characters.filter({ !(" ".characters.contains($0))}))
+                                //                                let subString = String(showString.characters.filter({ !(" ".characters.contains($0))}))
                                 self.set.append(showString)
                             }
                             
@@ -66,17 +76,15 @@ class UserProfileViewController: UIViewController {
                             let userAvatarImgUrl = imgUrl?["src"]
                             
                             if let url = URL.init(string: userAvatarImgUrl!) {
-                                    self.userAvatarImage.downloadedFrom(url: url)
+                                self.userAvatarImage.downloadedFrom(url: url)
                             }
+                            
+                            self.userNameLabel.text = self.set[0]
+                            self.userEmailLabel.text = self.set[1]
+                            self.userBirthdayLabel.text = self.set[2]
+                            self.userDescriptionLabel.text = self.set[3]
                         }
                         
-                        self.userNameLabel.text = self.set[0]
-                        self.userEmailLabel.text = self.set[1]
-                        self.userBirthdayLabel.text = self.set[2]
-                        self.userDescriptionLabel.text = self.set[3]
-                        
-                        
-
                     }
                 }
             case .failure(let error):
@@ -86,8 +94,9 @@ class UserProfileViewController: UIViewController {
                 loginView.displayToast("\(error.localizedDescription)")
             }
         }
-
     }
+    
+    
 }
 
 extension UIImageView {

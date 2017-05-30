@@ -81,6 +81,15 @@ class ChangePasswordViewController: UIViewController {
 //                                errorMessage.append(error.text!)
 //                                errorMessage.append("\n")
 //                            }
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account did login at another device.")
+                                })
+                                return
+                            }
                             
                             for profileMsg in doc.css("div[id^='profile-msg']"){
                                 print("profile message: \(profileMsg.text ?? "")")
@@ -96,7 +105,6 @@ class ChangePasswordViewController: UIViewController {
                             } else {
                                 self.errorInfoLabel.isHidden = true
                             }
-                            
                         }
                     }
                 }

@@ -138,21 +138,21 @@ class FirstViewController: UIViewController {
         var indexes: [String.Index] = []
         let timeString = day.stringByReplacingFirstOccurrenceOfString(target: date, withString: "")
         var searchRange = timeString.startIndex..<timeString.endIndex
-
+        
         while let range = timeString.range(of: ":", options: .caseInsensitive, range: searchRange) {
             searchRange = range.upperBound..<searchRange.upperBound
             indexes.append(range.lowerBound)
         }
         
         if timeString.characters.count > 13{
-                let index = timeString.index(indexes[2], offsetBy:-2)
-                let startTime = timeString.substring(to: index)
-                timeStart.append(startTime)
-                let endTime = timeString.substring(from: index)
-                timeEnd.append(endTime)
+            let index = timeString.index(indexes[2], offsetBy:-2)
+            let startTime = timeString.substring(to: index)
+            timeStart.append(startTime)
+            let endTime = timeString.substring(from: index)
+            timeEnd.append(endTime)
         } else if timeString.characters.count > 0{
-                timeStart.append(timeString)
-                timeEnd.append("")
+            timeStart.append(timeString)
+            timeEnd.append("")
         } else {
             timeStart.append("")
             timeEnd.append("")
@@ -164,65 +164,65 @@ class FirstViewController: UIViewController {
         case 1:
             parseStringToGetTime(day: aCalendarDay, date: "1")
         case 2:
-             parseStringToGetTime(day: aCalendarDay, date: "2")
+            parseStringToGetTime(day: aCalendarDay, date: "2")
         case 3:
-             parseStringToGetTime(day: aCalendarDay, date: "3")
+            parseStringToGetTime(day: aCalendarDay, date: "3")
         case 4:
-             parseStringToGetTime(day: aCalendarDay, date: "4")
+            parseStringToGetTime(day: aCalendarDay, date: "4")
         case 5:
-             parseStringToGetTime(day: aCalendarDay, date: "5")
+            parseStringToGetTime(day: aCalendarDay, date: "5")
         case 6:
-             parseStringToGetTime(day: aCalendarDay, date: "6")
+            parseStringToGetTime(day: aCalendarDay, date: "6")
         case 7:
-             parseStringToGetTime(day: aCalendarDay, date: "7")
+            parseStringToGetTime(day: aCalendarDay, date: "7")
         case 8:
-             parseStringToGetTime(day: aCalendarDay, date: "8")
+            parseStringToGetTime(day: aCalendarDay, date: "8")
         case 9:
-             parseStringToGetTime(day: aCalendarDay, date: "9")
+            parseStringToGetTime(day: aCalendarDay, date: "9")
         case 10:
-             parseStringToGetTime(day: aCalendarDay, date: "10")
+            parseStringToGetTime(day: aCalendarDay, date: "10")
         case 11:
-             parseStringToGetTime(day: aCalendarDay, date: "11")
+            parseStringToGetTime(day: aCalendarDay, date: "11")
         case 12:
-             parseStringToGetTime(day: aCalendarDay, date: "12")
+            parseStringToGetTime(day: aCalendarDay, date: "12")
         case 13:
-             parseStringToGetTime(day: aCalendarDay, date: "13")
+            parseStringToGetTime(day: aCalendarDay, date: "13")
         case 14:
-             parseStringToGetTime(day: aCalendarDay, date: "14")
+            parseStringToGetTime(day: aCalendarDay, date: "14")
         case 15:
-             parseStringToGetTime(day: aCalendarDay, date: "15")
+            parseStringToGetTime(day: aCalendarDay, date: "15")
         case 16:
-             parseStringToGetTime(day: aCalendarDay, date: "16")
+            parseStringToGetTime(day: aCalendarDay, date: "16")
         case 17:
-             parseStringToGetTime(day: aCalendarDay, date: "17")
+            parseStringToGetTime(day: aCalendarDay, date: "17")
         case 18:
-             parseStringToGetTime(day: aCalendarDay, date: "18")
+            parseStringToGetTime(day: aCalendarDay, date: "18")
         case 19:
-             parseStringToGetTime(day: aCalendarDay, date: "19")
+            parseStringToGetTime(day: aCalendarDay, date: "19")
         case 20:
-             parseStringToGetTime(day: aCalendarDay, date: "20")
+            parseStringToGetTime(day: aCalendarDay, date: "20")
         case 21:
-             parseStringToGetTime(day: aCalendarDay, date: "21")
+            parseStringToGetTime(day: aCalendarDay, date: "21")
         case 22:
-             parseStringToGetTime(day: aCalendarDay, date: "22")
+            parseStringToGetTime(day: aCalendarDay, date: "22")
         case 23:
-             parseStringToGetTime(day: aCalendarDay, date: "23")
+            parseStringToGetTime(day: aCalendarDay, date: "23")
         case 24:
-             parseStringToGetTime(day: aCalendarDay, date: "24")
+            parseStringToGetTime(day: aCalendarDay, date: "24")
         case 25:
-             parseStringToGetTime(day: aCalendarDay, date: "25")
+            parseStringToGetTime(day: aCalendarDay, date: "25")
         case 26:
-             parseStringToGetTime(day: aCalendarDay, date: "26")
+            parseStringToGetTime(day: aCalendarDay, date: "26")
         case 27:
-             parseStringToGetTime(day: aCalendarDay, date: "27")
+            parseStringToGetTime(day: aCalendarDay, date: "27")
         case 28:
-             parseStringToGetTime(day: aCalendarDay, date: "28")
+            parseStringToGetTime(day: aCalendarDay, date: "28")
         case 29:
-             parseStringToGetTime(day: aCalendarDay, date: "29")
+            parseStringToGetTime(day: aCalendarDay, date: "29")
         case 30:
-             parseStringToGetTime(day: aCalendarDay, date: "30")
+            parseStringToGetTime(day: aCalendarDay, date: "30")
         case 31:
-             parseStringToGetTime(day: aCalendarDay, date: "31")
+            parseStringToGetTime(day: aCalendarDay, date: "31")
         default:
             break
         }
@@ -244,6 +244,18 @@ class FirstViewController: UIViewController {
                 if (statuscode == 200)
                 {
                     if let html = response.result.value{
+                        if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account did login at another device.")
+                                })
+                                return
+                            }
+                        }
+                        
                         // Reset data
                         self.set.removeAll()
                         self.calendarDay.removeAll()
@@ -276,6 +288,18 @@ class FirstViewController: UIViewController {
                 if (statuscode == 200)
                 {
                     if let html = response.result.value{
+                        if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account did login at another device.")
+                                })
+                                return
+                            }
+                        }
+                        
                         self.set.removeAll()
                         self.calendarDay.removeAll()
                         self.timeStart.removeAll()
@@ -306,6 +330,18 @@ class FirstViewController: UIViewController {
                 if (statuscode == 200)
                 {
                     if let html = response.result.value{
+                        if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account did login at another device.")
+                                })
+                                return
+                            }
+                        }
+                        
                         // Reset data
                         self.set.removeAll()
                         self.calendarDay.removeAll()
@@ -337,6 +373,17 @@ class FirstViewController: UIViewController {
                 if (statuscode == 200)
                 {
                     if let html = response.result.value{
+                        if let doc = Kanna.HTML(html: html, encoding: String.Encoding.utf8) {
+                            for _ in doc.css("div[id^='login']") {
+                                // Other use your account login at another device. Did redirect to login
+                                let loginView = self.presentingViewController as! LoginViewController
+                                // Redirect to login view
+                                self.dismiss(animated: true, completion: {
+                                    loginView.displayToast("This account did login at another device.")
+                                })
+                                return
+                            }
+                        }
                         // Reset data
                         self.set.removeAll()
                         self.calendarDay.removeAll()

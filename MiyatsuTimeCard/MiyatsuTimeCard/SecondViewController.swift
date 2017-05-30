@@ -10,6 +10,7 @@ import UIKit
 import Alamofire
 import Kanna
 import Toast_Swift
+import MessageUI
 
 class WorkDate{
     var day : String
@@ -92,7 +93,7 @@ class DetailViewController: UIViewController{
     }
 }
 
-class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate {
+class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate, MFMailComposeViewControllerDelegate {
     
     @IBOutlet weak var workDiaryTableView: UITableView!
     @IBOutlet weak var userIdTextField: UITextField!
@@ -105,8 +106,10 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         if( traitCollection.forceTouchCapability == .available){
-            registerForPreviewing(with: self, sourceView: view)
+            registerForPreviewing(with: self, sourceView: workDiaryTableView)
         }
+        
+        self.hideKeyboardWhenTappedAround()
         
         loadWorkDiary()
         let customDatePickerView = MonthYearPickerView()
@@ -125,16 +128,18 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         toolBar.tintColor = UIColor.black
         toolBar.sizeToFit()
         
-        let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(SecondViewController.donePicker))
+        let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.done, target: self, action: #selector(SecondViewController.donePicker))
         toolBar.setItems([doneButton], animated: false)
         toolBar.isUserInteractionEnabled = true
         
         timeTextField.inputAccessoryView = toolBar
+        timeTextField.inputAssistantItem.trailingBarButtonGroups = []
+        timeTextField.inputAssistantItem.leadingBarButtonGroups = []
     }
     
     override func viewWillAppear(_ animated: Bool) {
         // Hide navigation bar
-        self.navigationController?.isNavigationBarHidden = true
+//        self.navigationController?.isNavigationBarHidden = true
         
         // Check
     }
@@ -167,9 +172,9 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
                                 let loginView = self.presentingViewController as! LoginViewController
                                 // Redirect to login view
                                 self.dismiss(animated: true, completion: {
-                                    loginView.displayToast("This account was logined at another device.")
+                                    loginView.displayToast("This account did login at another device.")
                                 })
-                                
+                                return
                             }
                             
                             // Reset data
@@ -204,6 +209,8 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 loginView.displayToast("\(error.localizedDescription)")
             }
         }
+        
+        userIdTextField.endEditing(true)
     }
     
     func loadWorkDiary(){
@@ -221,10 +228,11 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
                                 let loginView = self.presentingViewController as! LoginViewController
                                 // Redirect to login view
                                 self.dismiss(animated: true, completion: {
-                                    loginView.displayToast("This account was logined at another device.")
+                                    loginView.displayToast("This account did login at another device.")
                                 })
-                                
+                                return
                             }
+                            
                             for show in doc.css("td") {
                                 
                                 // Strip the string of surrounding whitespace.
@@ -272,6 +280,7 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
         guard let detailVC = storyboard?.instantiateViewController(withIdentifier: ("DetailViewController")) as? DetailViewController else { return nil }
         
         let detailDayWork = diary[indexPath.row]
+        
         detailVC.detailDayWork = detailDayWork
         
         detailVC.preferredContentSize = CGSize(width: 0.0, height: 300)
@@ -323,11 +332,59 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        timeTextField.endEditing(true)
     }
     
     // MARK: - Picker view
     func donePicker(){
         timeTextField.endEditing(true)
+    }
+    
+    @IBAction func exportMail(_ sender: Any) {
+        export()
+    }
+     
+    func export(){
+        
+        // MARK: - Export
+        let fileName = "MyWorkDiary.csv"
+        let path = URL.init(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
+        //        NSURL(fileURLWithPath: NSTemporaryDirectory()).URLByAppendingPathComponent(fileName)
+        var csvText = "Date,WD,Work Time,Time Started,Time Leave,Time Back,Time Ended\n"
+        
+        for aDate in diary{
+            let newLine = "\(aDate.day),\(aDate.date),\(aDate.workShift),\(aDate.workStartTime),\(aDate.leaveOutTime),\(aDate.leaveBackTime),\(aDate.workEndTime)\n"
+            csvText.append(newLine)
+        }
+        
+        do {
+            try csvText.write(to: path, atomically: true, encoding: .utf8)
+            let vc = UIActivityViewController.init(activityItems: [path], applicationActivities: [])
+//            vc.excludedActivityTypes = [UIActivityType.mail]
+            present(vc, animated: true, completion: nil)
+            
+//            if MFMailComposeViewController.canSendMail() {
+//                let emailController = MFMailComposeViewController()
+//                emailController.mailComposeDelegate = self
+//                emailController.setToRecipients(["admin@miyatsu.vn"]) //I usually leave this blank unless it's a "message the developer" type thing
+//                emailController.setSubject("Work diary exported")
+//                emailController.setMessageBody("Wow, look at this cool email", isHTML: false)
+//                
+//                try emailController.addAttachmentData(Data.init(contentsOf: path), mimeType: "text/csv", fileName: fileName)
+//                
+//                present(emailController, animated: true, completion: nil)
+//            }
+            
+        } catch  {
+            print("Failed to create file.")
+            print("\(error)")
+        }
+        
+       
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -370,4 +427,14 @@ func checkTime(workTime: String, workRealTime: String, checkLate: Bool) -> Bool{
     }
 }
 
-
+extension UIViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}

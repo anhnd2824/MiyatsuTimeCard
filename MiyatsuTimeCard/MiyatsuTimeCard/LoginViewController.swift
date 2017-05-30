@@ -33,10 +33,9 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var checkBoxButton: UIButton!
     @IBOutlet weak var autoLoginButton: UIButton!
-    @IBOutlet weak var chooseShiftButton: UIButton!
     @IBOutlet weak var loginButton: UIButton!
-    @IBOutlet weak var shiftPickerView: UIPickerView!
-    @IBOutlet weak var shiftPickerToolbar: UIToolbar!
+    @IBOutlet weak var shiftTextField: UITextField!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,19 +59,33 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
                      "03:50 ~ 11:50",
                      "11:50 ~ 19:50",
                      "19:50 ~ 03:50"]
+        let shiftPickerView = UIPickerView()
         shiftPickerView.delegate = self
         shiftPickerView.dataSource = self
         
         checkSaveId()
         checkAutoLogin()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(hidePickerView), name: NSNotification.Name(rawValue: "Hide"), object: nil)
-        
         // toggle "tap to dismiss" functionality
         ToastManager.shared.tapToDismissEnabled = true
         
         // toggle queueing behavior
         ToastManager.shared.queueEnabled = true
+        
+        let toolBar = UIToolbar()
+        toolBar.barStyle = .default
+        toolBar.isTranslucent = true
+        toolBar.tintColor = UIColor.black
+        toolBar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.done, target: self, action: #selector(LoginViewController.donePicker))
+        toolBar.setItems([doneButton], animated: false)
+        toolBar.isUserInteractionEnabled = true
+        
+        shiftTextField.inputAccessoryView = toolBar
+        shiftTextField.inputView = shiftPickerView
+        shiftTextField.inputAssistantItem.trailingBarButtonGroups = []
+        shiftTextField.inputAssistantItem.leadingBarButtonGroups = []
     }
 
     override func didReceiveMemoryWarning() {
@@ -81,10 +94,6 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     }
     
     // MARK: - PickerView
-    @objc func hidePickerView() {
-        shiftPickerView.isHidden = true
-        shiftPickerToolbar.isHidden = true
-    }
     
     // The number of columns of data
     func numberOfComponents(in pickerView: UIPickerView) -> Int{
@@ -105,8 +114,11 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         // This method is triggered whenever the user makes a change to the picker selection.
         // The parameter named row and component represents what was selected.
-        shiftId = row+1
-        chooseShiftButton.setTitle(shiftData[row], for: .normal)
+        shiftTextField.text = shiftData[row]
+    }
+    
+    func donePicker(){
+        shiftTextField.endEditing(true)
     }
     
     func checkSaveId(){
@@ -164,16 +176,6 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         }
     }
     
-    @IBAction func chooseShiftButtonClicked(_ sender: UIButton) {
-        shiftPickerView.isHidden = false
-        shiftPickerToolbar.isHidden = false
-    }
-    
-    @IBAction func doneButtonClicked(_ sender: UIBarButtonItem) {
-        shiftPickerView.isHidden = true
-        shiftPickerToolbar.isHidden = true
-    }
-    
     @IBAction func LoginButtonClicked(_ sender: UIButton) {
         let parameters: Parameters = [
             "username": "\(idTextField.text ?? "")",
@@ -225,10 +227,6 @@ class LoginViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
                 self.view.makeToast("\(error.localizedDescription)")
             }
         }
-        
-        // Hide picker view
-        shiftPickerView.isHidden = true
-        shiftPickerToolbar.isHidden = true
         
         // Hide keyboard
         idTextField.endEditing(true)
