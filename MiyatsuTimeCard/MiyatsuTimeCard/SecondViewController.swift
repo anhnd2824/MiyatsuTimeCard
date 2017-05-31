@@ -268,6 +268,8 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
             let detailDayWork = diary[workDiaryTableView.indexPathsForSelectedRows![0].row]
             let detailVC = segue.destination as! DetailViewController
             detailVC.detailDayWork = detailDayWork
+//            detailVC.navigationController?.title = detailDayWork.day
+            detailVC.title = detailDayWork.day
         }
     }
     
@@ -298,13 +300,24 @@ class SecondViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     // MARK: - Table view
     // Only one section in the table view
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     // Rows is equal to the number of Quotes defined above
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return diary.count
+    }
+    
+    // Header view
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerCell = tableView.dequeueReusableCell(withIdentifier: "workDateTableViewHeaderCell")
+        
+        return headerCell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
